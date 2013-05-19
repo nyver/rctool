@@ -3,19 +3,47 @@ package com.nyver.rctool;
 import javax.swing.*;
 
 /**
- * Description
+ * RCTool main class
  *
  * @author Yuri Novitsky
  */
-public class RCTool {
-    private JTabbedPane MainPane;
-    private JPanel MainPanel;
+public class RCTool extends JFrame
+{
+    private int WINDOW_STARTUP_WIDTH = 800;
+    private int WINDOW_STARTUP_HEIGHT = 600;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("RCTool");
-        frame.setContentPane(new RCTool().MainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+    private JPanel MainPanel;
+    private JSplitPane VerticalSplitPane;
+
+    public RCTool()
+    {
+        super("RCTool");
+        setContentPane(MainPanel);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+        setSize(WINDOW_STARTUP_WIDTH, WINDOW_STARTUP_HEIGHT);
+        setVisible(true);
+    }
+
+    public static void main(String[] args)
+    {
+        AppStarter starter = new AppStarter(args);
+        SwingUtilities.invokeLater(starter);
+    }
+}
+
+
+class AppStarter extends Thread
+{
+    private String[] args;
+
+    public AppStarter(String[] args)
+    {
+        this.args = args;
+    }
+
+    public void run()
+    {
+        RCTool rcTool = new RCTool();
     }
 }
