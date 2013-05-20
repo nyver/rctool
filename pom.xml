@@ -8,6 +8,13 @@
     <artifactId>rctool</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>maven.tmatesoft.com</id>
+            <url>http://maven.tmatesoft.com/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.intellij</groupId>
@@ -18,6 +25,11 @@
             <groupId>org.swinglabs</groupId>
             <artifactId>swingx</artifactId>
             <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tmatesoft.svnkit</groupId>
+            <artifactId>svnkit</artifactId>
+            <version>1.7.9</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

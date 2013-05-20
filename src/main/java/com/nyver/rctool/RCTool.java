@@ -1,6 +1,7 @@
 package com.nyver.rctool;
 
 import javax.swing.*;
+import java.io.IOException;
 
 /**
  * RCTool main class
@@ -9,20 +10,27 @@ import javax.swing.*;
  */
 public class RCTool extends JFrame
 {
-    private int WINDOW_STARTUP_WIDTH = 800;
-    private int WINDOW_STARTUP_HEIGHT = 600;
-
     private JPanel MainPanel;
     private JSplitPane VerticalSplitPane;
+    private JSplitPane HorizontalSplitPane;
+
+    AppSettings settings = new AppSettings();
 
     public RCTool()
     {
         super("RCTool");
-        setContentPane(MainPanel);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
-        setSize(WINDOW_STARTUP_WIDTH, WINDOW_STARTUP_HEIGHT);
-        setVisible(true);
+
+        try {
+            settings.load();
+
+            setContentPane(MainPanel);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            pack();
+            setSize(Integer.parseInt(settings.get(AppSettings.SETTING_WINDOW_START_WIDTH)), Integer.parseInt(settings.get(AppSettings.SETTING_WINDOW_START_HEIGHT)));
+            setVisible(true);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
+        }
     }
 
     public static void main(String[] args)

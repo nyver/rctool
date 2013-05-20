@@ -15,12 +15,12 @@
           </grid>
         </constraints>
         <properties>
-          <dividerLocation value="400"/>
+          <dividerLocation value="386"/>
           <orientation value="0"/>
         </properties>
         <border type="none"/>
         <children>
-          <splitpane id="e3efa">
+          <splitpane id="e3efa" binding="HorizontalSplitPane">
             <constraints>
               <splitpane position="left"/>
             </constraints>
