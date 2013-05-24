@@ -1,11 +1,13 @@
 package com.nyver.rctool;
 
-import com.nyver.rctool.datamodel.CvsTreeTableModel;
+import com.nyver.rctool.model.RevisionList;
+import com.nyver.rctool.treetable.CvsTreeTableModel;
 import org.jdesktop.swingx.JXTreeTable;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * RCTool main class
@@ -27,16 +29,23 @@ public class RCTool extends JFrame
 
         try {
             settings.load();
-
             setContentPane(MainPanel);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             initSettings();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
+            System.exit(0);
+        }
+
+        try {
             initCvsTreeTable();
-            setVisible(true);
-        } catch (IOException e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
+
+
+        setVisible(true);
     }
 
     private void initSettings()
@@ -46,8 +55,15 @@ public class RCTool extends JFrame
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
     }
 
-    private void initCvsTreeTable()
-    {
+    private void initCvsTreeTable() throws MalformedURLException, SVNClientException {
+        RevisionList list = new RevisionList(
+                settings.get(AppSettings.SETTING_SVN_HOST),
+                settings.get(AppSettings.SETTING_SVN_USER),
+                settings.get(AppSettings.SETTING_SVN_PASSWORD)
+        );
+
+        list.getList();
+
         cvsTreeTable.setTreeTableModel(new CvsTreeTableModel());
     }
 

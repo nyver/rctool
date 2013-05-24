@@ -1,4 +1,4 @@
-package com.nyver.rctool.datamodel;
+package com.nyver.rctool.treetable;
 
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
