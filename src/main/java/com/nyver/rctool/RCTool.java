@@ -8,6 +8,7 @@ import org.tigris.subversion.svnclientadapter.SVNClientException;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 
 /**
  * RCTool main class
@@ -34,6 +35,7 @@ public class RCTool extends JFrame
             pack();
             initSettings();
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
             System.exit(0);
         }
@@ -41,6 +43,7 @@ public class RCTool extends JFrame
         try {
             initCvsTreeTable();
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
 
@@ -55,16 +58,14 @@ public class RCTool extends JFrame
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
     }
 
-    private void initCvsTreeTable() throws MalformedURLException, SVNClientException {
+    private void initCvsTreeTable() throws MalformedURLException, SVNClientException, ParseException {
         RevisionList list = new RevisionList(
                 settings.get(AppSettings.SETTING_SVN_HOST),
                 settings.get(AppSettings.SETTING_SVN_USER),
                 settings.get(AppSettings.SETTING_SVN_PASSWORD)
         );
 
-        list.getList();
-
-        cvsTreeTable.setTreeTableModel(new CvsTreeTableModel());
+        cvsTreeTable.setTreeTableModel(new CvsTreeTableModel(list.getList()));
     }
 
     public static void main(String[] args)

@@ -2,9 +2,12 @@ package com.nyver.rctool.model;
 
 import com.nyver.rctool.adapter.SvnAdapter;
 import org.tigris.subversion.svnclientadapter.ISVNInfo;
+import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
+import org.tigris.subversion.svnclientadapter.SVNRevision;
 
 import java.net.MalformedURLException;
+import java.text.ParseException;
 
 /**
  * Revision List class
@@ -14,12 +17,19 @@ import java.net.MalformedURLException;
 public class RevisionList {
 
     private SvnAdapter svnAdapter;
+    private ISVNLogMessage[] revisions;
 
-    public RevisionList(String host, String user, String password) throws SVNClientException {
+    public RevisionList(String host, String user, String password) throws SVNClientException, MalformedURLException {
         svnAdapter = new SvnAdapter(host, user, password);
     }
 
-    public void getList() throws MalformedURLException, SVNClientException {
-        ISVNInfo info = svnAdapter.getInfo();
+    public SvnAdapter getAdapter()
+    {
+        return svnAdapter;
+    }
+
+    public ISVNLogMessage[] getList() throws ParseException, SVNClientException
+    {
+        return getAdapter().getLatestRevisions();
     }
 }
