@@ -55,7 +55,7 @@
 
     </dependencies>
     <build>
-        <finalName>JMSUtil</finalName>
+        <finalName>rctool</finalName>
         <plugins>
 
             <plugin>

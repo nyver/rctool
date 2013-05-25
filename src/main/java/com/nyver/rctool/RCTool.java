@@ -2,12 +2,10 @@ package com.nyver.rctool;
 
 import com.nyver.rctool.csv.CvsAdapter;
 import com.nyver.rctool.csv.CvsAdapterException;
-import com.nyver.rctool.model.Issue;
 import com.nyver.rctool.model.Revision;
-import com.nyver.rctool.model.RevisionList;
-import com.nyver.rctool.tracker.TrackerAdapter;
 import com.nyver.rctool.treetable.CvsTreeTableModel;
-import com.nyver.rctool.treetable.TrackerTreeTableModel;
+import com.nyver.rctool.worker.CvsWorker;
+import com.nyver.rctool.worker.TrackerWorker;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.JXTreeTable;
 
@@ -67,60 +65,12 @@ public class RCTool extends JFrame
 
     private void initCvsTreeTable() throws CvsAdapterException
     {
-        SwingWorker taskFetchRevisions = new SwingWorker() {
-
-            @Override
-            protected Object doInBackground() throws Exception {
-                cvsTreeTable.setEnabled(false);
-
-                CvsTreeTableModel loadModel = new CvsTreeTableModel();
-                loadModel.setColumns(new String[] {""});
-                loadModel.add(new Revision(String.format("Fetching revisions from repository (%s)...", settings.get(AppSettings.SETTING_CVS_HOST))));
-                cvsTreeTable.setTreeTableModel(loadModel);
-
-                CvsAdapter cvsAdapter = CvsAdapter.factory(
-                    settings.get(AppSettings.SETTING_CVS_TYPE),
-                    settings.get(AppSettings.SETTING_CVS_HOST),
-                    settings.get(AppSettings.SETTING_CVS_USER),
-                    settings.get(AppSettings.SETTING_CVS_PASSWORD)
-                );
-
-                CvsTreeTableModel model = new CvsTreeTableModel(cvsAdapter.getRevisions());
-                cvsTreeTable.setTreeTableModel(model);
-                cvsTreeTable.setEnabled(true);
-                return null;
-            }
-        };
-
-        taskFetchRevisions.execute();
+        new CvsWorker(cvsTreeTable, settings).execute();
     }
 
     private void initTrackerTreeTable()
     {
-        SwingWorker taskFetchIssues = new SwingWorker() {
-            @Override
-            protected Object doInBackground() throws Exception {
-                trackerTreeTable.setEnabled(false);
-
-                TrackerTreeTableModel loadModel = new TrackerTreeTableModel();
-                loadModel.setColumns(new String[] {""});
-                loadModel.add(new Issue(String.format("Fetching issues from tracker (%s)...", settings.get(AppSettings.SETTING_TRACKER_HOST))));
-                trackerTreeTable.setTreeTableModel(loadModel);
-
-                TrackerAdapter trackerAdapter = TrackerAdapter.factory(
-                        settings.get(AppSettings.SETTING_TRACKER_TYPE),
-                        settings.get(AppSettings.SETTING_TRACKER_HOST),
-                        settings.get(AppSettings.SETTING_TRACKER_USER),
-                        settings.get(AppSettings.SETTING_TRACKER_PASSWORD)
-                );
-
-                TrackerTreeTableModel model = new TrackerTreeTableModel(trackerAdapter.getIssues());
-                trackerTreeTable.setTreeTableModel(model);
-                trackerTreeTable.setEnabled(true);
-                return null;
-            }
-        };
-        taskFetchIssues.execute();
+        new TrackerWorker(trackerTreeTable, settings).execute();
     }
 
     public static void main(String[] args)
