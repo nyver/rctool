@@ -104,4 +104,14 @@ public class CvsTreeTableModel extends AbstractTreeTableModel
         return 0;
     }
 
+    public void add(Revision revision)
+    {
+        root.add(revision);
+    }
+
+    public void setColumns(String[] columns)
+    {
+        this.columns = columns;
+    }
+
 }

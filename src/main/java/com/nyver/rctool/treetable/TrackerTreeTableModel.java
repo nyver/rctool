@@ -101,5 +101,15 @@ public class TrackerTreeTableModel extends AbstractTreeTableModel
         return 0;
     }
 
+    public void add(Issue issue)
+    {
+        root.add(issue);
+    }
+
+    public void setColumns(String[] columns)
+    {
+        this.columns = columns;
+    }
+
 
 }

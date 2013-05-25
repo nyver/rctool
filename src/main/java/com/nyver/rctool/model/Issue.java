@@ -16,6 +16,11 @@ public class Issue
         this.summary = summary;
     }
 
+    public Issue(String key)
+    {
+        this.key = key;
+    }
+
     public String getKey()
     {
         return key;

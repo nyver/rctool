@@ -23,6 +23,11 @@ public class Revision
         this.author = author;
     }
 
+    public Revision(String revision)
+    {
+        this.revision = revision;
+    }
+
     public String getComment() {
         return comment;
     }

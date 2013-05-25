@@ -2,6 +2,8 @@ package com.nyver.rctool;
 
 import com.nyver.rctool.csv.CvsAdapter;
 import com.nyver.rctool.csv.CvsAdapterException;
+import com.nyver.rctool.model.Issue;
+import com.nyver.rctool.model.Revision;
 import com.nyver.rctool.model.RevisionList;
 import com.nyver.rctool.tracker.TrackerAdapter;
 import com.nyver.rctool.treetable.CvsTreeTableModel;
@@ -65,23 +67,27 @@ public class RCTool extends JFrame
 
     private void initCvsTreeTable() throws CvsAdapterException
     {
-        CvsTreeTableModel model = new CvsTreeTableModel();
-        cvsTreeTable.setTreeTableModel(model);
-
         SwingWorker taskFetchRevisions = new SwingWorker() {
 
             @Override
             protected Object doInBackground() throws Exception {
-                StatusBarLabel.setText(String.format("Fetching revisions from repository (%s)...", settings.get(AppSettings.SETTING_CVS_HOST)));
+                cvsTreeTable.setEnabled(false);
+
+                CvsTreeTableModel loadModel = new CvsTreeTableModel();
+                loadModel.setColumns(new String[] {""});
+                loadModel.add(new Revision(String.format("Fetching revisions from repository (%s)...", settings.get(AppSettings.SETTING_CVS_HOST))));
+                cvsTreeTable.setTreeTableModel(loadModel);
+
                 CvsAdapter cvsAdapter = CvsAdapter.factory(
                     settings.get(AppSettings.SETTING_CVS_TYPE),
                     settings.get(AppSettings.SETTING_CVS_HOST),
                     settings.get(AppSettings.SETTING_CVS_USER),
                     settings.get(AppSettings.SETTING_CVS_PASSWORD)
                 );
+
                 CvsTreeTableModel model = new CvsTreeTableModel(cvsAdapter.getRevisions());
                 cvsTreeTable.setTreeTableModel(model);
-                StatusBarLabel.setText("Complete");
+                cvsTreeTable.setEnabled(true);
                 return null;
             }
         };
@@ -91,12 +97,16 @@ public class RCTool extends JFrame
 
     private void initTrackerTreeTable()
     {
-        TrackerTreeTableModel model = new TrackerTreeTableModel();
-        trackerTreeTable.setTreeTableModel(model);
-
         SwingWorker taskFetchIssues = new SwingWorker() {
             @Override
             protected Object doInBackground() throws Exception {
+                trackerTreeTable.setEnabled(false);
+
+                TrackerTreeTableModel loadModel = new TrackerTreeTableModel();
+                loadModel.setColumns(new String[] {""});
+                loadModel.add(new Issue(String.format("Fetching issues from tracker (%s)...", settings.get(AppSettings.SETTING_TRACKER_HOST))));
+                trackerTreeTable.setTreeTableModel(loadModel);
+
                 TrackerAdapter trackerAdapter = TrackerAdapter.factory(
                         settings.get(AppSettings.SETTING_TRACKER_TYPE),
                         settings.get(AppSettings.SETTING_TRACKER_HOST),
@@ -106,10 +116,10 @@ public class RCTool extends JFrame
 
                 TrackerTreeTableModel model = new TrackerTreeTableModel(trackerAdapter.getIssues());
                 trackerTreeTable.setTreeTableModel(model);
+                trackerTreeTable.setEnabled(true);
                 return null;
             }
         };
-
         taskFetchIssues.execute();
     }
 
