@@ -27,7 +27,7 @@
               <splitpane position="left"/>
             </constraints>
             <properties>
-              <dividerLocation value="712"/>
+              <dividerLocation value="400"/>
             </properties>
             <border type="none"/>
             <children>
@@ -39,6 +39,22 @@
                 <border type="none"/>
                 <children>
                   <component id="36dbc" class="org.jdesktop.swingx.JXTreeTable" binding="cvsTreeTable">
+                    <constraints/>
+                    <properties/>
+                    <clientProperties>
+                      <terminateEditOnFocusLost class="java.lang.Boolean" value="true"/>
+                    </clientProperties>
+                  </component>
+                </children>
+              </scrollpane>
+              <scrollpane id="909e9">
+                <constraints>
+                  <splitpane position="left"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="a6190" class="org.jdesktop.swingx.JXTreeTable" binding="trackerTreeTable">
                     <constraints/>
                     <properties/>
                     <clientProperties>

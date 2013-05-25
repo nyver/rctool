@@ -1,4 +1,4 @@
-package com.nyver.rctool.adapter;
+package com.nyver.rctool.csv;
 
 import com.nyver.rctool.model.Revision;
 import org.tigris.subversion.svnclientadapter.*;
@@ -15,6 +15,8 @@ import java.util.ArrayList;
  */
 public class SvnAdapter extends CvsAdapter
 {
+
+    public static String TYPE = "svn";
 
     private SVNUrl svnUrl;
     private ISVNInfo info;

@@ -1,15 +1,8 @@
 package com.nyver.rctool.model;
 
-import com.nyver.rctool.adapter.CvsAdapter;
-import com.nyver.rctool.adapter.CvsAdapterException;
-import com.nyver.rctool.adapter.SvnAdapter;
-import org.tigris.subversion.svnclientadapter.ISVNInfo;
-import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
-import org.tigris.subversion.svnclientadapter.SVNClientException;
-import org.tigris.subversion.svnclientadapter.SVNRevision;
+import com.nyver.rctool.csv.CvsAdapter;
+import com.nyver.rctool.csv.CvsAdapterException;
 
-import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 /**

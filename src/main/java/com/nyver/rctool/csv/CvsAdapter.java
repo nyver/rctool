@@ -1,7 +1,6 @@
-package com.nyver.rctool.adapter;
+package com.nyver.rctool.csv;
 
 import com.nyver.rctool.model.Revision;
-import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 
 import java.util.ArrayList;
 
