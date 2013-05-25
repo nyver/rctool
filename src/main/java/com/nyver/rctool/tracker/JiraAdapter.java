@@ -55,7 +55,7 @@ public class JiraAdapter extends TrackerAdapter
         final NullProgressMonitor pm = new NullProgressMonitor();
 
         SearchResult result = getClient().getSearchClient().searchJql(
-           String.format("assignee = %s", "nyver"),
+           String.format("assignee = %s" , "nyver"),
            pm
         );
 

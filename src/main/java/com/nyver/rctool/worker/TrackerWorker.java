@@ -44,7 +44,9 @@ public class TrackerWorker extends SwingWorker
                 settings.get(AppSettings.SETTING_TRACKER_PASSWORD)
         );
 
-        TrackerTreeTableModel model = new TrackerTreeTableModel(trackerAdapter.getIssues());
+        TrackerTreeTableModel model = new TrackerTreeTableModel(
+            trackerAdapter.getIssues()
+        );
         treeTable.setTreeTableModel(model);
         treeTable.setEnabled(true);
         return null;
