@@ -18,9 +18,10 @@ public class AppSettings {
     public static final String SETTING_WINDOW_START_HEIGHT = "windowStartupHeight";
     public static final String SETTING_VERTICAL_PANE_DIVIDER_LOCATION = "VerticalSplitPaneDividerLocation";
     public static final String SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION = "HorizontalSplitPaneDividerLocation";
-    public static final String SETTING_SVN_HOST = "svnHost";
-    public static final String SETTING_SVN_USER = "svnUser";
-    public static final String SETTING_SVN_PASSWORD = "svnPassword";
+    public static final String SETTING_CVS_TYPE = "cvsType";
+    public static final String SETTING_CVS_HOST = "cvsHost";
+    public static final String SETTING_CVS_USER = "cvsUser";
+    public static final String SETTING_CVS_PASSWORD = "cvsPassword";
 
     private Properties settings = new Properties();
 

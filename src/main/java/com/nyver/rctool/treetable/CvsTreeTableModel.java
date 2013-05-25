@@ -1,7 +1,10 @@
 package com.nyver.rctool.treetable;
 
+import com.nyver.rctool.model.Revision;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
+
+import java.util.ArrayList;
 
 /**
  * CvsTreeTableModel
@@ -11,10 +14,15 @@ import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 public class CvsTreeTableModel extends AbstractTreeTableModel
 {
 
-    private String[] columns = {"Revision", "Comment"};
-    protected ISVNLogMessage[] root;
+    private String[] columns = {"Revision", "Date", "Comment", "Author"};
+    protected ArrayList<Revision> root = new ArrayList<Revision>();
 
-    public CvsTreeTableModel(ISVNLogMessage[] root)
+    public CvsTreeTableModel()
+    {
+        super(null);
+    }
+
+    public CvsTreeTableModel(ArrayList<Revision> root)
     {
         super(root);
         this.root = root;
@@ -48,11 +56,13 @@ public class CvsTreeTableModel extends AbstractTreeTableModel
     public Object getValueAt(Object o, int i)
     {
 
-        if (o instanceof ISVNLogMessage) {
-            ISVNLogMessage revision = (ISVNLogMessage) o;
+        if (o instanceof Revision) {
+            Revision revision = (Revision) o;
             switch(i) {
-                case 0: return revision.getRevision().getNumber();
-                case 1: return revision.getMessage();
+                case 0: return revision.getRevision();
+                case 1: return revision.getDate();
+                case 2: return revision.getComment();
+                case 3: return revision.getAuthor();
             }
         }
 
@@ -62,16 +72,16 @@ public class CvsTreeTableModel extends AbstractTreeTableModel
     @Override
     public Object getChild(Object parent, int index)
     {
-        ISVNLogMessage[] revisions = (ISVNLogMessage[]) parent;
-        return revisions[index];
+        ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
+        return revisions.get(index);
     }
 
     @Override
     public int getChildCount(Object parent)
     {
-        if (parent instanceof ISVNLogMessage[]) {
-            ISVNLogMessage[] revisions = (ISVNLogMessage[]) parent;
-            return revisions.length;
+        if (parent instanceof ArrayList) {
+            ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
+            return revisions.size();
         }
 
         return 0;
@@ -80,11 +90,13 @@ public class CvsTreeTableModel extends AbstractTreeTableModel
     @Override
     public int getIndexOfChild(Object parent, Object child)
     {
-        if (parent instanceof ISVNLogMessage[]) {
-            ISVNLogMessage[] revisions = (ISVNLogMessage[]) parent;
-            ISVNLogMessage revision = (ISVNLogMessage) child;
-            for(int i=0; i <= revisions.length; i++) {
-                if (revisions[i] == revision) {
+        if (parent instanceof ArrayList) {
+
+            ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
+            Revision revision = (Revision) child;
+
+            for(int i=0; i <= revisions.size(); i++) {
+                if (revisions.get(i) == revision) {
                     return i;
                 }
             }

@@ -1,7 +1,10 @@
 package com.nyver.rctool;
 
+import com.nyver.rctool.adapter.CvsAdapter;
+import com.nyver.rctool.adapter.CvsAdapterException;
 import com.nyver.rctool.model.RevisionList;
 import com.nyver.rctool.treetable.CvsTreeTableModel;
+import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.JXTreeTable;
 import org.tigris.subversion.svnclientadapter.SVNClientException;
 
@@ -21,6 +24,8 @@ public class RCTool extends JFrame
     private JSplitPane VerticalSplitPane;
     private JSplitPane HorizontalSplitPane;
     private JXTreeTable cvsTreeTable;
+    private JLabel StatusBarLabel;
+    private JXStatusBar StatusBar;
 
     AppSettings settings = new AppSettings();
 
@@ -34,7 +39,7 @@ public class RCTool extends JFrame
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             pack();
             initSettings();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
             System.exit(0);
@@ -42,7 +47,7 @@ public class RCTool extends JFrame
 
         try {
             initCvsTreeTable();
-        } catch (Exception e) {
+        } catch (CvsAdapterException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
@@ -58,14 +63,33 @@ public class RCTool extends JFrame
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
     }
 
-    private void initCvsTreeTable() throws MalformedURLException, SVNClientException, ParseException {
-        RevisionList list = new RevisionList(
-                settings.get(AppSettings.SETTING_SVN_HOST),
-                settings.get(AppSettings.SETTING_SVN_USER),
-                settings.get(AppSettings.SETTING_SVN_PASSWORD)
-        );
+    private void initCvsTreeTable() throws CvsAdapterException
+    {
+        CvsTreeTableModel model = new CvsTreeTableModel();
+        cvsTreeTable.setTreeTableModel(model);
 
-        cvsTreeTable.setTreeTableModel(new CvsTreeTableModel(list.getList()));
+        SwingWorker task = new SwingWorker() {
+
+            @Override
+            protected Object doInBackground() throws Exception {
+                StatusBarLabel.setText(String.format("Fetching revisions from repository (%s)...", settings.get(AppSettings.SETTING_CVS_HOST)));
+                RevisionList list = new RevisionList(
+                        CvsAdapter.factory(
+                                settings.get(AppSettings.SETTING_CVS_TYPE),
+                                settings.get(AppSettings.SETTING_CVS_HOST),
+                                settings.get(AppSettings.SETTING_CVS_USER),
+                                settings.get(AppSettings.SETTING_CVS_PASSWORD)
+                        )
+                );
+                CvsTreeTableModel model = new CvsTreeTableModel(list.getList());
+                cvsTreeTable.setTreeTableModel(model);
+                StatusBarLabel.setText("Complete");
+                return null;
+            }
+        };
+
+        task.execute();
+
     }
 
     public static void main(String[] args)
