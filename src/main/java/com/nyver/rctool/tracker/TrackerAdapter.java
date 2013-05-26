@@ -1,8 +1,10 @@
 package com.nyver.rctool.tracker;
 
+import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Issue;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * TrackerAdapter abstract class
@@ -32,6 +34,6 @@ public abstract class TrackerAdapter
         return adapter;
     }
 
-    public abstract ArrayList<Issue> getIssues();
+    public abstract ArrayList<Issue> getIssues(Filter filter);
 
 }

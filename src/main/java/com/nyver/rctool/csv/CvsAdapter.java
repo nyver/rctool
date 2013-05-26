@@ -1,8 +1,10 @@
 package com.nyver.rctool.csv;
 
+import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Cvs Adapter abstract class
@@ -27,7 +29,7 @@ public abstract class CvsAdapter
 
     public abstract void setup() throws CvsAdapterException;
 
-    public abstract ArrayList<Revision> getRevisions() throws CvsAdapterException;
+    public abstract ArrayList<Revision> getRevisions(Filter filter) throws CvsAdapterException;
 
     public static CvsAdapter factory(String type, String host, String user, String password) throws CvsAdapterException
     {

@@ -5,10 +5,13 @@ import com.atlassian.jira.rest.client.NullProgressMonitor;
 import com.atlassian.jira.rest.client.domain.BasicIssue;
 import com.atlassian.jira.rest.client.domain.SearchResult;
 import com.atlassian.jira.rest.client.internal.jersey.JerseyJiraRestClientFactory;
+import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Issue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 public class JiraAdapter extends TrackerAdapter
 {
     public static String TYPE = "jira";
+    public static String DATE_FORMAT = "yyyy-MM-dd";
 
     JiraRestClient client;
 
@@ -48,14 +52,16 @@ public class JiraAdapter extends TrackerAdapter
         }
     }
 
-    public ArrayList<Issue> getIssues()
+    public ArrayList<Issue> getIssues(Filter filter)
     {
         ArrayList<Issue> issues = new ArrayList<Issue>();
 
         final NullProgressMonitor pm = new NullProgressMonitor();
 
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+
         SearchResult result = getClient().getSearchClient().searchJql(
-           String.format("assignee = %s" , "nyver"),
+           String.format("updatedDate >= \"%s\" AND updatedDate <= \"%s\"" , dateFormat.format(filter.getStartDate()), dateFormat.format(filter.getEndDate())),
            pm
         );
 

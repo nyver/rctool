@@ -1,5 +1,6 @@
 package com.nyver.rctool.csv;
 
+import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 import org.tigris.subversion.svnclientadapter.*;
 import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
@@ -7,6 +8,7 @@ import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * SVN Adapter class
@@ -23,15 +25,21 @@ public class SvnAdapter extends CvsAdapter
 
     private ISVNClientAdapter svnClient;
 
+    private static boolean isSet = false;
+
     public SvnAdapter(String host, String user, String password) throws SVNClientException, MalformedURLException
     {
         super(host, user, password);
     }
 
     @Override
-    public void setup() throws CvsAdapterException {
+    public void setup() throws CvsAdapterException
+    {
         try {
-            SvnKitClientAdapterFactory.setup();
+            if (!isSet) {
+                SvnKitClientAdapterFactory.setup();
+                isSet = true;
+            }
             svnClient = SVNClientAdapterFactory.createSVNClient(SvnKitClientAdapterFactory.SVNKIT_CLIENT);
             svnClient.setUsername(user);
             svnClient.setPassword(password);
@@ -74,7 +82,7 @@ public class SvnAdapter extends CvsAdapter
     }
 
     @Override
-    public ArrayList<Revision> getRevisions() throws CvsAdapterException
+    public ArrayList<Revision> getRevisions(Filter filter) throws CvsAdapterException
     {
         try {
             ArrayList<Revision> revisions = new ArrayList<Revision>();

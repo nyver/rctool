@@ -92,7 +92,7 @@ public class TrackerTreeTableModel extends AbstractTreeTableModel
             ArrayList<Issue> issues = (ArrayList<Issue>) parent;
             Issue issue = (Issue) child;
 
-            for(int i=0; i <= issues.size(); i++) {
+            for(int i=0; i < issues.size(); i++) {
                 if (issues.get(i) == issue) {
                     return i;
                 }
