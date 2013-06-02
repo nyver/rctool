@@ -5,24 +5,25 @@ import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
- * CvsTreeTableModel
+ * VcsTreeTableModel
  *
  * @author Yuri Novitsky
  */
-public class CvsTreeTableModel extends AbstractTreeTableModel
+public class VcsTreeTableModel extends AbstractTreeTableModel
 {
 
     private String[] columns = {"Revision", "Date", "Comment", "Author"};
-    protected ArrayList<Revision> root = new ArrayList<Revision>();
+    protected List<Revision> root = new ArrayList<Revision>();
 
-    public CvsTreeTableModel()
+    public VcsTreeTableModel()
     {
         super(null);
     }
 
-    public CvsTreeTableModel(ArrayList<Revision> root)
+    public VcsTreeTableModel(List<Revision> root)
     {
         super(root);
         this.root = root;
@@ -67,6 +68,11 @@ public class CvsTreeTableModel extends AbstractTreeTableModel
         }
 
         return null;
+    }
+
+    public Revision getRevision(int row)
+    {
+        return root.get(row);
     }
 
     @Override

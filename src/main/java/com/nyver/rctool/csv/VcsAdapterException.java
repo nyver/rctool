@@ -5,13 +5,13 @@ package com.nyver.rctool.csv;
  *
  * @author Yuri Novitsky
  */
-public class CvsAdapterException extends Exception
+public class VcsAdapterException extends Exception
 {
-    public CvsAdapterException(String message) {
+    public VcsAdapterException(String message) {
         super(message);
     }
 
-    public CvsAdapterException() {
+    public VcsAdapterException() {
         super();
     }
 }

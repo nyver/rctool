@@ -1,6 +1,8 @@
 package com.nyver.rctool.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Revision class
@@ -14,13 +16,15 @@ public class Revision
     private String comment;
     private String author;
     private Date date;
+    private List<RevisionChange> changes = new ArrayList<RevisionChange>();
 
-    public Revision(String revision, Date date, String comment, String author)
+    public Revision(String revision, Date date, String comment, String author, List<RevisionChange> changes)
     {
         this.revision = revision;
         this.date = date;
         this.comment = comment;
         this.author = author;
+        this.changes = changes;
     }
 
     public Revision(String revision)
@@ -58,5 +62,13 @@ public class Revision
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public List<RevisionChange> getChanges() {
+        return changes;
+    }
+
+    public void setChanges(List<RevisionChange> changes) {
+        this.changes = changes;
     }
 }

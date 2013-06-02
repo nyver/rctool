@@ -4,14 +4,14 @@ import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Cvs Adapter abstract class
  *
  * @author Yuri Novitsky
  */
-public abstract class CvsAdapter
+public abstract class VcsAdapter
 {
 
     public static String TYPE_SVN = "svn";
@@ -20,27 +20,27 @@ public abstract class CvsAdapter
     protected String user;
     protected String password;
 
-    protected CvsAdapter(String host, String user, String password)
+    protected VcsAdapter(String host, String user, String password)
     {
         this.host = host;
         this.user = user;
         this.password = password;
     }
 
-    public abstract void setup() throws CvsAdapterException;
+    public abstract void setup() throws VcsAdapterException;
 
-    public abstract ArrayList<Revision> getRevisions(Filter filter) throws CvsAdapterException;
+    public abstract List<Revision> getRevisions(Filter filter) throws VcsAdapterException;
 
-    public static CvsAdapter factory(String type, String host, String user, String password) throws CvsAdapterException
+    public static VcsAdapter factory(String type, String host, String user, String password) throws VcsAdapterException
     {
-        CvsAdapter adapter;
+        VcsAdapter adapter;
         try {
             adapter = new SvnAdapter(host, user, password);
             adapter.setup();
             return adapter;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         }
     }
 }

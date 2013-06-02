@@ -2,23 +2,26 @@ package com.nyver.rctool.csv;
 
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
+import com.nyver.rctool.model.RevisionChange;
 import org.tigris.subversion.svnclientadapter.*;
 import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
 
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.List;
 
 /**
  * SVN Adapter class
  *
  * @author Yuri Novitsky
  */
-public class SvnAdapter extends CvsAdapter
+public class SvnAdapter extends VcsAdapter
 {
 
     public static String TYPE = "svn";
+
+    private static int REVISIONS_PER_REQUEST = 100;
 
     private SVNUrl svnUrl;
     private ISVNInfo info;
@@ -33,7 +36,7 @@ public class SvnAdapter extends CvsAdapter
     }
 
     @Override
-    public void setup() throws CvsAdapterException
+    public void setup() throws VcsAdapterException
     {
         try {
             if (!isSet) {
@@ -46,10 +49,10 @@ public class SvnAdapter extends CvsAdapter
             svnUrl = new SVNUrl(host);
         } catch (SVNClientException e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         }
     }
 
@@ -63,12 +66,12 @@ public class SvnAdapter extends CvsAdapter
         return svnClient;
     }
 
-    public SVNRevision.Number getLastRevision() throws CvsAdapterException {
+    public SVNRevision.Number getLastRevision() throws VcsAdapterException {
         try {
             return getInfo().getLastChangedRevision();
         } catch (SVNClientException e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         }
     }
 
@@ -81,32 +84,73 @@ public class SvnAdapter extends CvsAdapter
         return info;
     }
 
+    public List<RevisionChange> getChanges(ISVNLogMessage message)
+    {
+        List<RevisionChange> changes = new ArrayList<RevisionChange>();
+        ISVNLogMessageChangePath[] changePaths = message.getChangedPaths();
+        if (changePaths.length > 0) {
+            for(ISVNLogMessageChangePath path: changePaths) {
+                changes.add(new RevisionChange(path.getPath(), path.getAction()));
+            }
+        }
+        return changes;
+    }
+
     @Override
-    public ArrayList<Revision> getRevisions(Filter filter) throws CvsAdapterException
+    public List<Revision> getRevisions(Filter filter) throws VcsAdapterException
     {
         try {
             ArrayList<Revision> revisions = new ArrayList<Revision>();
-            //ISVNLogMessage[] messages = getClient().getLogMessages(svnUrl, SVNRevision.getRevision("0"), SVNRevision.HEAD);
-            ISVNLogMessage[] messages = getClient().getLogMessages(svnUrl, SVNRevision.getRevision(String.valueOf(getLastRevision().getNumber() - 10)), SVNRevision.HEAD);
-            if (messages.length > 0) {
-                for(int i=0; i < messages.length; i++) {
-                    revisions.add(
-                        new Revision(
-                            String.valueOf(messages[i].getRevision().getNumber()),
-                            messages[i].getDate(),
-                            messages[i].getMessage(),
-                            messages[i].getAuthor()
-                        )
-                    );
+
+            long startRevisionNumber = getLastRevision().getNumber() - REVISIONS_PER_REQUEST;
+            long endRevisionNumber = 0;
+
+            ISVNLogMessage[] messages = getClient().getLogMessages(svnUrl, SVNRevision.getRevision(String.valueOf(startRevisionNumber)), SVNRevision.HEAD);
+
+            boolean isOutOfLimit = false;
+
+            while(messages.length > 0) {
+                if (messages.length > 0) {
+                    for(int i=0; i < messages.length; i++) {
+                        ISVNLogMessage message = messages[i];
+                        if (message.getDate().equals(filter.getStartDate())
+                                || message.getDate().equals(filter.getEndDate())
+                                || (message.getDate().after(filter.getStartDate()) && message.getDate().before(filter.getEndDate()))) {
+
+                            revisions.add(
+                                    new Revision(
+                                            String.valueOf(message.getRevision().getNumber()),
+                                            message.getDate(),
+                                            message.getMessage(),
+                                            message.getAuthor(),
+                                            getChanges(message)
+                                    )
+                            );
+                        }
+
+                        if (message.getDate().before(filter.getStartDate())) {
+                            isOutOfLimit = true;
+                        }
+                    }
                 }
+
+                if (isOutOfLimit) {
+                    break;
+                }
+
+                endRevisionNumber = startRevisionNumber;
+                startRevisionNumber = endRevisionNumber - REVISIONS_PER_REQUEST;
+
+                messages = getClient().getLogMessages(svnUrl, SVNRevision.getRevision(String.valueOf(startRevisionNumber)), SVNRevision.HEAD);
             }
+
             return revisions;
         } catch (SVNClientException e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         } catch (ParseException e) {
             e.printStackTrace();
-            throw new CvsAdapterException(e.getMessage());
+            throw new VcsAdapterException(e.getMessage());
         }
     }
 }
