@@ -1,5 +1,6 @@
 package com.nyver.rctool;
 
+import com.ezware.oxbow.swingbits.table.filter.TableRowFilterSupport;
 import com.nyver.rctool.csv.VcsAdapter;
 import com.nyver.rctool.csv.VcsAdapterException;
 import com.nyver.rctool.model.Filter;
@@ -104,6 +105,8 @@ public class RCTool extends JFrame
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
+
+        initSwingBits();
 
         setVisible(true);
 
@@ -231,6 +234,13 @@ public class RCTool extends JFrame
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    private void initSwingBits()
+    {
+        TableRowFilterSupport.forTable(cvsTreeTable).searchable(true).apply();
+        TableRowFilterSupport.forTable(trackerTreeTable).searchable(true).apply();
+        TableRowFilterSupport.forTable(cvsPropertiesTable).searchable(true).apply();
     }
 
     public static void main(String[] args)
