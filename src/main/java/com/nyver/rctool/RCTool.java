@@ -24,7 +24,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * RCTool main class
@@ -51,6 +54,7 @@ public class RCTool extends JFrame
     private JXDatePicker PeriodStartDatePicker;
     private JXDatePicker PeriodEndDatePicker;
     private JTable cvsPropertiesTable;
+    private JSplitPane cvsSplitPane;
 
     AppSettings settings = new AppSettings();
 
@@ -110,11 +114,17 @@ public class RCTool extends JFrame
         return new Filter(PeriodStartDatePicker.getDate(), PeriodEndDatePicker.getDate());
     }
 
+    private SimpleDateFormat getSettingDateFormat()
+    {
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+
     private void initSettings()
     {
         setSize(settings.getInt(AppSettings.SETTING_WINDOW_START_WIDTH), settings.getInt(AppSettings.SETTING_WINDOW_START_HEIGHT));
         VerticalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION));
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
+        cvsSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION));
     }
 
     private void saveSettings() throws IOException
@@ -124,6 +134,12 @@ public class RCTool extends JFrame
         settings.set(AppSettings.SETTING_WINDOW_START_HEIGHT, dimension.getHeight());
         settings.set(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION, VerticalSplitPane.getDividerLocation());
         settings.set(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION, HorizontalSplitPane.getDividerLocation());
+        settings.set(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION, cvsSplitPane.getDividerLocation());
+
+        SimpleDateFormat dateFormat = getSettingDateFormat();
+
+        settings.set(AppSettings.SETTING_FILTER_DATE_FROM, dateFormat.format(PeriodStartDatePicker.getDate()));
+        settings.set(AppSettings.SETTING_FILTER_DATE_TO, dateFormat.format(PeriodEndDatePicker.getDate()));
 
         settings.save();
     }
@@ -191,8 +207,30 @@ public class RCTool extends JFrame
 
     private void initFilterByPeriod()
     {
-        PeriodStartDatePicker.setDate(Calendar.getInstance().getTime());
-        PeriodEndDatePicker.setDate(Calendar.getInstance().getTime());
+        String filterDateFrom = settings.get(AppSettings.SETTING_FILTER_DATE_FROM);
+        String filterDateTo = settings.get(AppSettings.SETTING_FILTER_DATE_TO);
+
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = getSettingDateFormat();
+
+        try {
+            if (!filterDateFrom.isEmpty()) {
+                calendar.setTime(dateFormat.parse(filterDateFrom));
+                PeriodStartDatePicker.setDate(calendar.getTime());
+            } else {
+                PeriodStartDatePicker.setDate(Calendar.getInstance().getTime());
+            }
+
+            if (!filterDateFrom.isEmpty()) {
+                calendar.setTime(dateFormat.parse(filterDateTo));
+                PeriodEndDatePicker.setDate(calendar.getTime());
+            } else {
+                PeriodEndDatePicker.setDate(Calendar.getInstance().getTime());
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args)

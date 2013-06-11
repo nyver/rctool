@@ -18,6 +18,7 @@ public class AppSettings {
     public static final String SETTING_WINDOW_START_HEIGHT = "windowStartupHeight";
     public static final String SETTING_VERTICAL_PANE_DIVIDER_LOCATION = "VerticalSplitPaneDividerLocation";
     public static final String SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION = "HorizontalSplitPaneDividerLocation";
+    public static final String SETTING_CVS_PANE_DIVIDER_LOCATION = "CvsSplitPaneDividerLocation";
 
     public static final String SETTING_CVS_TYPE = "cvsType";
     public static final String SETTING_CVS_HOST = "cvsHost";
@@ -28,6 +29,9 @@ public class AppSettings {
     public static final String SETTING_TRACKER_HOST = "trackerHost";
     public static final String SETTING_TRACKER_USER = "trackerUser";
     public static final String SETTING_TRACKER_PASSWORD = "trackerPassword";
+
+    public static final String SETTING_FILTER_DATE_FROM = "filterDateFrom";
+    public static final String SETTING_FILTER_DATE_TO   = "filterDateTo";
 
     private Properties settings = new Properties();
 

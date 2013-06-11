@@ -59,7 +59,7 @@
                   </scrollpane>
                 </children>
               </grid>
-              <splitpane id="32ac4">
+              <splitpane id="32ac4" binding="cvsSplitPane">
                 <constraints>
                   <splitpane position="right"/>
                 </constraints>
@@ -90,6 +90,7 @@
                             <constraints/>
                             <properties>
                               <autoCreateRowSorter value="false"/>
+                              <sortable value="false"/>
                             </properties>
                             <clientProperties>
                               <terminateEditOnFocusLost class="java.lang.Boolean" value="true"/>
