@@ -21,6 +21,7 @@ public class CvsWorker extends SwingWorker
     private VcsAdapter adapter;
     private AppSettings settings;
     private Filter filter;
+    private VcsTreeTableModel model = new VcsTreeTableModel();
 
     public CvsWorker(JXTreeTable treeTable)
     {
@@ -45,9 +46,13 @@ public class CvsWorker extends SwingWorker
         loadModel.add(new Revision(String.format("Fetching revisions from repository (%s)...", settings.get(AppSettings.SETTING_CVS_HOST))));
         treeTable.setTreeTableModel(loadModel);
 
-        VcsTreeTableModel model = new VcsTreeTableModel(adapter.getRevisions(filter));
+        model = new VcsTreeTableModel(adapter.getRevisions(filter));
+        return null;
+    }
+
+    @Override
+    protected void done() {
         treeTable.setTreeTableModel(model);
         treeTable.setEnabled(true);
-        return null;
     }
 }

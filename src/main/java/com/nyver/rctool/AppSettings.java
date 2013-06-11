@@ -74,6 +74,16 @@ public class AppSettings {
         settings.setProperty(name, value);
     }
 
+    public void set(String name, double value)
+    {
+        set(name, String.valueOf((int) value));
+    }
+
+    public void set(String name, int value)
+    {
+        set(name, String.valueOf(value));
+    }
+
     public void save() throws IOException {
         FileOutputStream out = new FileOutputStream(SETTINGS_FILENAME);
         settings.store(out, SETTINGS_FILENAME);

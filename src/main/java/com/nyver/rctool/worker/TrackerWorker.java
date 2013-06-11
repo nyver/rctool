@@ -10,7 +10,7 @@ import org.jdesktop.swingx.JXTreeTable;
 import javax.swing.*;
 
 /**
- * TraclerWorker
+ * TrackerWorker
  *
  * @author Yuri Novitsky
  */
@@ -21,6 +21,7 @@ public class TrackerWorker extends SwingWorker
     private TrackerAdapter adapter;
     private AppSettings settings;
     private Filter filter;
+    private TrackerTreeTableModel model = new TrackerTreeTableModel();
 
     public TrackerWorker(JXTreeTable treeTable) {
         this.treeTable = treeTable;
@@ -42,11 +43,15 @@ public class TrackerWorker extends SwingWorker
         loadModel.add(new Issue(String.format("Fetching issues from tracker (%s)...", settings.get(AppSettings.SETTING_TRACKER_HOST))));
         treeTable.setTreeTableModel(loadModel);
 
-        TrackerTreeTableModel model = new TrackerTreeTableModel(
+        model = new TrackerTreeTableModel(
             adapter.getIssues(filter)
         );
+        return null;
+    }
+
+    @Override
+    protected void done() {
         treeTable.setTreeTableModel(model);
         treeTable.setEnabled(true);
-        return null;
     }
 }

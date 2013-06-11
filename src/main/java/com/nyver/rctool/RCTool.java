@@ -18,8 +18,11 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -59,6 +62,19 @@ public class RCTool extends JFrame
             settings.load();
             setContentPane(MainPanel);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent event) {
+                    super.windowClosing(event);
+                    try {
+                        saveSettings();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
             pack();
             initSettings();
             initFilters();
@@ -84,6 +100,7 @@ public class RCTool extends JFrame
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
+
         setVisible(true);
 
     }
@@ -98,6 +115,17 @@ public class RCTool extends JFrame
         setSize(settings.getInt(AppSettings.SETTING_WINDOW_START_WIDTH), settings.getInt(AppSettings.SETTING_WINDOW_START_HEIGHT));
         VerticalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION));
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
+    }
+
+    private void saveSettings() throws IOException
+    {
+        Dimension dimension = getSize();
+        settings.set(AppSettings.SETTING_WINDOW_START_WIDTH, dimension.getWidth());
+        settings.set(AppSettings.SETTING_WINDOW_START_HEIGHT, dimension.getHeight());
+        settings.set(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION, VerticalSplitPane.getDividerLocation());
+        settings.set(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION, HorizontalSplitPane.getDividerLocation());
+
+        settings.save();
     }
 
     private void initVcsAdapter() throws VcsAdapterException
