@@ -1,7 +1,6 @@
 package com.nyver.rctool.treetable;
 
 import com.nyver.rctool.model.Issue;
-import com.nyver.rctool.model.Revision;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
  */
 public class TrackerTreeTableModel extends AbstractTreeTableModel
 {
-    private String[] columns = {"Key", "Summary"};
+    private String[] columns = {"Key", "Date", "Summary"};
     protected ArrayList<Issue> root = new ArrayList<Issue>();
 
     public TrackerTreeTableModel()
@@ -59,7 +58,8 @@ public class TrackerTreeTableModel extends AbstractTreeTableModel
             Issue issue = (Issue) o;
             switch(i) {
                 case 0: return issue.getKey();
-                case 1: return issue.getSummary();
+                case 1: return issue.getDate();
+                case 2: return issue.getSummary();
             }
         }
 

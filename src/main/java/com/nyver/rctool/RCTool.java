@@ -1,15 +1,16 @@
 package com.nyver.rctool;
 
 import com.ezware.oxbow.swingbits.table.filter.TableRowFilterSupport;
-import com.nyver.rctool.csv.VcsAdapter;
-import com.nyver.rctool.csv.VcsAdapterException;
+import com.nyver.rctool.vcs.VcsAdapter;
+import com.nyver.rctool.vcs.VcsAdapterException;
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 import com.nyver.rctool.tracker.TrackerAdapter;
 import com.nyver.rctool.tracker.TrackerAdapterException;
 import com.nyver.rctool.treetable.VcsPropertiesTableModel;
 import com.nyver.rctool.treetable.VcsTreeTableModel;
-import com.nyver.rctool.worker.CvsWorker;
+import com.nyver.rctool.treetable.filter.JXTreeTableFilter;
+import com.nyver.rctool.worker.VcsWorker;
 import com.nyver.rctool.worker.TrackerWorker;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jdesktop.swingx.JXStatusBar;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * RCTool main class
@@ -89,6 +89,8 @@ public class RCTool extends JFrame
             System.exit(0);
         }
 
+        initSwingBits();
+
         try {
             initVcsAdapter();
             initVcsTreeTable();
@@ -105,8 +107,6 @@ public class RCTool extends JFrame
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
-
-        initSwingBits();
 
         setVisible(true);
 
@@ -159,7 +159,9 @@ public class RCTool extends JFrame
 
     private void initVcsTreeTable() throws VcsAdapterException
     {
-        new CvsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
+        new VcsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
+
+        cvsTreeTable.setColumnControlVisible(true);
 
         cvsTreeTable.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
@@ -193,6 +195,9 @@ public class RCTool extends JFrame
     private void initTrackerTreeTable()
     {
         new TrackerWorker(trackerTreeTable, trackerAdapter, settings, getFilter()).execute();
+
+        trackerTreeTable.setColumnControlVisible(true);
+
     }
 
     private void initFilters()
@@ -202,7 +207,7 @@ public class RCTool extends JFrame
         FilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new CvsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
+                new VcsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
                 new TrackerWorker(trackerTreeTable, trackerAdapter, settings, getFilter()).execute();
             }
         });
@@ -238,7 +243,7 @@ public class RCTool extends JFrame
 
     private void initSwingBits()
     {
-        TableRowFilterSupport.forTable(cvsTreeTable).searchable(true).apply();
+        TableRowFilterSupport.forFilter(new JXTreeTableFilter(cvsTreeTable)).searchable(true).apply();
         TableRowFilterSupport.forTable(trackerTreeTable).searchable(true).apply();
         TableRowFilterSupport.forTable(cvsPropertiesTable).searchable(true).apply();
     }

@@ -1,123 +1,82 @@
 package com.nyver.rctool.treetable;
 
+import com.ezware.oxbow.swingbits.table.filter.DistinctColumnItem;
 import com.nyver.rctool.model.Revision;
-import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
-import org.tigris.subversion.svnclientadapter.ISVNLogMessage;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
+import org.jdesktop.swingx.treetable.MutableTreeTableNode;
+import org.jdesktop.swingx.treetable.TreeTableNode;
 
 /**
  * VcsTreeTableModel
  *
  * @author Yuri Novitsky
  */
-public class VcsTreeTableModel extends AbstractTreeTableModel
+public class VcsTreeTableModel extends MyTreeTableModel
 {
-
-    private String[] columns = {"Revision", "Date", "Comment", "Author"};
-    protected List<Revision> root = new ArrayList<Revision>();
+    protected String[] columnNames = {"Revision", "Date", "Comment", "Author"};
 
     public VcsTreeTableModel()
     {
         super(null);
     }
 
-    public VcsTreeTableModel(List<Revision> root)
+    public VcsTreeTableModel(TreeTableNode root)
     {
         super(root);
-        this.root = root;
-    }
-
-    @Override
-    public Object getRoot()
-    {
-        return root;
-    }
-
-    @Override
-    public int getColumnCount()
-    {
-        return columns.length;
-    }
-
-    @Override
-    public Class<?> getColumnClass(int column)
-    {
-        return String.class;
-    }
-
-    @Override
-    public String getColumnName(int column)
-    {
-        return columns[column];
+        setColumns(columnNames);
     }
 
     @Override
     public Object getValueAt(Object o, int i)
     {
-
-        if (o instanceof Revision) {
-            Revision revision = (Revision) o;
+        if (o instanceof MutableTreeTableNode) {
+            MutableTreeTableNode node = (MutableTreeTableNode) o;
+            Revision revision = (Revision) node.getUserObject();
             switch(i) {
-                case 0: return revision.getRevision();
-                case 1: return revision.getDate();
-                case 2: return revision.getComment();
-                case 3: return revision.getAuthor();
+                case 0:
+                    return revision.getRevision();
+                case 1:
+                    return revision.getDate();
+                case 2:
+                    return revision.getComment();
+                case 3:
+                    return revision.getAuthor();
             }
         }
-
         return null;
     }
 
     public Revision getRevision(int row)
     {
-        return root.get(row);
-    }
-
-    @Override
-    public Object getChild(Object parent, int index)
-    {
-        ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
-        return revisions.get(index);
-    }
-
-    @Override
-    public int getChildCount(Object parent)
-    {
-        if (parent instanceof ArrayList) {
-            ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
-            return revisions.size();
+        MutableTreeTableNode node = (MutableTreeTableNode) getChild(root, row);
+        if (null != node) {
+            return (Revision) node.getUserObject();
         }
-
-        return 0;
+        return null;
     }
 
     @Override
-    public int getIndexOfChild(Object parent, Object child)
+    protected Object filterRoot(Object root)
     {
-        if (parent instanceof ArrayList) {
-
-            ArrayList<Revision> revisions = (ArrayList<Revision>) parent;
-            Revision revision = (Revision) child;
-
-            for(int i=0; i <= revisions.size(); i++) {
-                if (revisions.get(i) == revision) {
-                    return i;
+        DefaultMutableTreeTableNode revisions = new DefaultMutableTreeTableNode(new Revision("root"));
+        if (null != distinctColumnItems && distinctColumnItems.size() > 0) {
+            DefaultMutableTreeTableNode rootNode = (DefaultMutableTreeTableNode) root;
+            for(int count = 0; count < rootNode.getChildCount(); count++) {
+                DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) rootNode.getChildAt(count);
+                for(int i = 0; i < getColumnCount(); i++) {
+                    if (distinctColumnItems.containsKey(i)) {
+                        if (distinctColumnItems.get(i).contains(new DistinctColumnItem(getValueAt(node, i), 0))) {
+                            revisions.add(new DefaultMutableTreeTableNode(node.getUserObject()));
+                            break;
+                        }
+                    }
                 }
             }
+        } else {
+            revisions = (DefaultMutableTreeTableNode) root;
         }
-        return 0;
-    }
 
-    public void add(Revision revision)
-    {
-        root.add(revision);
-    }
-
-    public void setColumns(String[] columns)
-    {
-        this.columns = columns;
+        return revisions;
     }
 
 }

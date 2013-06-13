@@ -1,5 +1,7 @@
 package com.nyver.rctool.model;
 
+import java.util.Date;
+
 /**
  * Tracker Issue
  *
@@ -9,11 +11,13 @@ public class Issue
 {
     private String key;
     private String summary;
+    private Date date;
 
-    public Issue(String key, String summary)
+    public Issue(String key, String summary, Date date)
     {
         this.key = key;
         this.summary = summary;
+        this.date = date;
     }
 
     public Issue(String key)
@@ -40,4 +44,13 @@ public class Issue
     {
         this.summary = summary;
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
 }

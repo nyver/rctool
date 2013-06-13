@@ -1,9 +1,8 @@
-package com.nyver.rctool.csv;
+package com.nyver.rctool.vcs;
 
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

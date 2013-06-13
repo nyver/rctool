@@ -69,7 +69,7 @@ public class JiraAdapter extends TrackerAdapter
             for(BasicIssue basicIssue: result.getIssues()) {
                 com.atlassian.jira.rest.client.domain.Issue issue = getClient().getIssueClient().getIssue(basicIssue.getKey(), pm);
 
-                issues.add(new Issue(issue.getKey(), issue.getSummary()));
+                issues.add(new Issue(issue.getKey(), issue.getSummary(), issue.getUpdateDate().toDate()));
             }
         }
 

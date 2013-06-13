@@ -1,8 +1,9 @@
-package com.nyver.rctool.csv;
+package com.nyver.rctool.vcs;
 
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 import com.nyver.rctool.model.RevisionChange;
+import org.jdesktop.swingx.treetable.TreeTableNode;
 import org.tigris.subversion.svnclientadapter.*;
 import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
 
@@ -153,4 +154,5 @@ public class SvnAdapter extends VcsAdapter
             throw new VcsAdapterException(e.getMessage());
         }
     }
+
 }

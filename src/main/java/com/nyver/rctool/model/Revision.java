@@ -1,5 +1,8 @@
 package com.nyver.rctool.model;
 
+import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
+import org.jdesktop.swingx.treetable.MutableTreeTableNode;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
