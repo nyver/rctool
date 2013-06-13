@@ -167,7 +167,7 @@ public class RCTool extends JFrame
             @Override
             public void valueChanged(TreeSelectionEvent e) {
                 VcsTreeTableModel model = (VcsTreeTableModel) cvsTreeTable.getTreeTableModel();
-                Revision revision = model.getRevision(cvsTreeTable.convertRowIndexToModel(cvsTreeTable.getSelectedRow()));
+                Revision revision = (Revision) model.getItem(cvsTreeTable.convertRowIndexToModel(cvsTreeTable.getSelectedRow()));
                 VcsPropertiesTableModel cvsPropertiesModel = new VcsPropertiesTableModel(revision.getChanges());
                 cvsPropertiesTable.setModel(cvsPropertiesModel);
                 cvsPropertiesTable.removeAll();
@@ -244,7 +244,7 @@ public class RCTool extends JFrame
     private void initSwingBits()
     {
         TableRowFilterSupport.forFilter(new JXTreeTableFilter(cvsTreeTable)).searchable(true).apply();
-        TableRowFilterSupport.forTable(trackerTreeTable).searchable(true).apply();
+        TableRowFilterSupport.forFilter(new JXTreeTableFilter(trackerTreeTable)).searchable(true).apply();
         TableRowFilterSupport.forTable(cvsPropertiesTable).searchable(true).apply();
     }
 

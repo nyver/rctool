@@ -1,7 +1,9 @@
 package com.nyver.rctool.treetable;
 
 import com.ezware.oxbow.swingbits.table.filter.DistinctColumnItem;
+import com.nyver.rctool.model.Revision;
 import org.jdesktop.swingx.treetable.AbstractTreeTableModel;
+import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 import org.jdesktop.swingx.treetable.MutableTreeTableNode;
 import org.jdesktop.swingx.treetable.TreeTableNode;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 /**
  * @author Yuri Novitsky
  */
-public abstract class MyTreeTableModel extends AbstractTreeTableModel
+public abstract class MyTreeTableModel<E> extends AbstractTreeTableModel
 {
     protected String[] columns;
     protected TreeTableNode root;
@@ -96,11 +98,43 @@ public abstract class MyTreeTableModel extends AbstractTreeTableModel
         distinctColumnItems.put(i, items);
     }
 
-    protected abstract Object filterRoot(Object root);
-
     public void setColumns(String[] columns)
     {
         this.columns = columns;
+    }
+
+    public E getItem(int row)
+    {
+        MutableTreeTableNode node = (MutableTreeTableNode) getChild(root, row);
+        if (null != node) {
+            return (E) node.getUserObject();
+        }
+        return null;
+    }
+
+    protected abstract E getRootUserData();
+
+    protected Object filterRoot(Object root)
+    {
+        DefaultMutableTreeTableNode revisions = new DefaultMutableTreeTableNode(getRootUserData());
+        if (null != distinctColumnItems && distinctColumnItems.size() > 0) {
+            DefaultMutableTreeTableNode rootNode = (DefaultMutableTreeTableNode) root;
+            for(int count = 0; count < rootNode.getChildCount(); count++) {
+                DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) rootNode.getChildAt(count);
+                for(int i = 0; i < getColumnCount(); i++) {
+                    if (distinctColumnItems.containsKey(i)) {
+                        if (distinctColumnItems.get(i).contains(new DistinctColumnItem(getValueAt(node, i), 0))) {
+                            revisions.add(new DefaultMutableTreeTableNode(node.getUserObject()));
+                            break;
+                        }
+                    }
+                }
+            }
+        } else {
+            revisions = (DefaultMutableTreeTableNode) root;
+        }
+
+        return revisions;
     }
 
 }

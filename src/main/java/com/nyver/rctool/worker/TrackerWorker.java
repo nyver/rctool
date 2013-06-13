@@ -6,8 +6,10 @@ import com.nyver.rctool.model.Issue;
 import com.nyver.rctool.tracker.TrackerAdapter;
 import com.nyver.rctool.treetable.TrackerTreeTableModel;
 import org.jdesktop.swingx.JXTreeTable;
+import org.jdesktop.swingx.treetable.DefaultMutableTreeTableNode;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * TrackerWorker
@@ -38,19 +40,27 @@ public class TrackerWorker extends SwingWorker
     protected Object doInBackground() throws Exception {
         treeTable.setEnabled(false);
 
-        TrackerTreeTableModel loadModel = new TrackerTreeTableModel();
-        loadModel.setColumns(new String[] {""});
-        loadModel.add(new Issue(String.format("Fetching issues from tracker (%s)...", settings.get(AppSettings.SETTING_TRACKER_HOST))));
+        DefaultMutableTreeTableNode root = new DefaultMutableTreeTableNode(new Issue(String.format("Fetching issues from tracker (%s)...", settings.get(AppSettings.SETTING_TRACKER_HOST))));
+
+        TrackerTreeTableModel loadModel = new TrackerTreeTableModel(root);
+        loadModel.setColumns(new String[]{""});
+        treeTable.setRootVisible(true);
         treeTable.setTreeTableModel(loadModel);
 
-        model = new TrackerTreeTableModel(
-            adapter.getIssues(filter)
-        );
+        List<Issue> issues = adapter.getIssues(filter);
+        if (issues.size() > 0) {
+            for(Issue issue: issues) {
+                root.add(new DefaultMutableTreeTableNode(issue));
+            }
+        }
+
+        model = new TrackerTreeTableModel(root);
         return null;
     }
 
     @Override
     protected void done() {
+        treeTable.setRootVisible(false);
         treeTable.setTreeTableModel(model);
         treeTable.setEnabled(true);
     }
