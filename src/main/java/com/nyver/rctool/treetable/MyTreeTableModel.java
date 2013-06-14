@@ -105,7 +105,7 @@ public abstract class MyTreeTableModel<E> extends AbstractTreeTableModel
 
     public E getItem(int row)
     {
-        MutableTreeTableNode node = (MutableTreeTableNode) getChild(root, row);
+        MutableTreeTableNode node = (MutableTreeTableNode) getChild(filterRoot(root), row);
         if (null != node) {
             return (E) node.getUserObject();
         }
