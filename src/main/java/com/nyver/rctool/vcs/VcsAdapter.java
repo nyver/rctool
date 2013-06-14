@@ -2,7 +2,13 @@ package com.nyver.rctool.vcs;
 
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
+import org.tigris.subversion.svnclientadapter.SVNClientException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -26,6 +32,30 @@ public abstract class VcsAdapter
         this.password = password;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public abstract void setup() throws VcsAdapterException;
 
     public abstract List<Revision> getRevisions(Filter filter) throws VcsAdapterException;
@@ -42,4 +72,12 @@ public abstract class VcsAdapter
             throw new VcsAdapterException(e.getMessage());
         }
     }
+
+    public abstract File checkoutFile(String path, String revision, boolean previousRevision) throws VcsAdapterException;
+
+    public File checkoutFile(String path, String revision) throws VcsAdapterException
+    {
+        return checkoutFile(path, revision, false);
+    }
+
 }

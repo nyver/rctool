@@ -33,6 +33,8 @@ public class AppSettings {
     public static final String SETTING_FILTER_DATE_FROM = "filterDateFrom";
     public static final String SETTING_FILTER_DATE_TO   = "filterDateTo";
 
+    public static final String SETTING_DIFFER = "differ";
+
     private Properties settings = new Properties();
 
     public Properties load() throws IOException {

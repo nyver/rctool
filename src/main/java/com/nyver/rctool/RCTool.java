@@ -1,14 +1,13 @@
 package com.nyver.rctool;
 
 import com.ezware.oxbow.swingbits.table.filter.TableRowFilterSupport;
+import com.nyver.rctool.listener.CvsPropertiesMouseListener;
+import com.nyver.rctool.listener.CvsTreeSelectionListener;
 import com.nyver.rctool.vcs.VcsAdapter;
 import com.nyver.rctool.vcs.VcsAdapterException;
 import com.nyver.rctool.model.Filter;
-import com.nyver.rctool.model.Revision;
 import com.nyver.rctool.tracker.TrackerAdapter;
 import com.nyver.rctool.tracker.TrackerAdapterException;
-import com.nyver.rctool.treetable.VcsPropertiesTableModel;
-import com.nyver.rctool.treetable.VcsTreeTableModel;
 import com.nyver.rctool.treetable.filter.JXTreeTableFilter;
 import com.nyver.rctool.worker.VcsWorker;
 import com.nyver.rctool.worker.TrackerWorker;
@@ -17,8 +16,6 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,15 +34,13 @@ import java.util.Calendar;
  */
 public class RCTool extends JFrame
 {
-    private VcsAdapter cvsAdapter;
+    private VcsAdapter vcsAdapter;
     private TrackerAdapter trackerAdapter;
 
     private JPanel MainPanel;
     private JSplitPane VerticalSplitPane;
     private JSplitPane HorizontalSplitPane;
-    private JXTreeTable cvsTreeTable;
-    private JLabel StatusBarLabel;
-    private JXStatusBar StatusBar;
+    private JXTreeTable vcsTreeTable;
     private JXTreeTable trackerTreeTable;
     private JPanel FilterByPeriodPanel;
     private JButton FilterButton;
@@ -54,8 +49,10 @@ public class RCTool extends JFrame
     private JLabel PeriodEndLabel;
     private JXDatePicker PeriodStartDatePicker;
     private JXDatePicker PeriodEndDatePicker;
-    private JTable cvsPropertiesTable;
-    private JSplitPane cvsSplitPane;
+    private JTable vcsPropertiesTable;
+    private JSplitPane vcsSplitPane;
+    private JPanel statusBar;
+    private JLabel statusBarLabel;
 
     AppSettings settings = new AppSettings();
 
@@ -127,7 +124,7 @@ public class RCTool extends JFrame
         setSize(settings.getInt(AppSettings.SETTING_WINDOW_START_WIDTH), settings.getInt(AppSettings.SETTING_WINDOW_START_HEIGHT));
         VerticalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION));
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
-        cvsSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION));
+        vcsSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION));
     }
 
     private void saveSettings() throws IOException
@@ -137,7 +134,7 @@ public class RCTool extends JFrame
         settings.set(AppSettings.SETTING_WINDOW_START_HEIGHT, dimension.getHeight());
         settings.set(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION, VerticalSplitPane.getDividerLocation());
         settings.set(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION, HorizontalSplitPane.getDividerLocation());
-        settings.set(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION, cvsSplitPane.getDividerLocation());
+        settings.set(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION, vcsSplitPane.getDividerLocation());
 
         SimpleDateFormat dateFormat = getSettingDateFormat();
 
@@ -149,7 +146,7 @@ public class RCTool extends JFrame
 
     private void initVcsAdapter() throws VcsAdapterException
     {
-        cvsAdapter = VcsAdapter.factory(
+        vcsAdapter = VcsAdapter.factory(
                 settings.get(AppSettings.SETTING_CVS_TYPE),
                 settings.get(AppSettings.SETTING_CVS_HOST),
                 settings.get(AppSettings.SETTING_CVS_USER),
@@ -159,27 +156,27 @@ public class RCTool extends JFrame
 
     private void initVcsTreeTable() throws VcsAdapterException
     {
-        new VcsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
+        new VcsWorker(vcsTreeTable, vcsAdapter, settings, getFilter()).execute();
 
-        cvsTreeTable.setColumnControlVisible(true);
+        vcsTreeTable.setColumnControlVisible(true);
 
-        cvsTreeTable.addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                VcsTreeTableModel model = (VcsTreeTableModel) cvsTreeTable.getTreeTableModel();
-                Revision revision = (Revision) model.getItem(cvsTreeTable.convertRowIndexToModel(cvsTreeTable.getSelectedRow()));
-                VcsPropertiesTableModel cvsPropertiesModel = new VcsPropertiesTableModel(revision.getChanges());
-                cvsPropertiesTable.setModel(cvsPropertiesModel);
-                cvsPropertiesTable.removeAll();
-
-            }
-        });
+        vcsTreeTable.addTreeSelectionListener(
+            new CvsTreeSelectionListener(vcsTreeTable, vcsPropertiesTable)
+        );
     }
 
     private void initVcsPropertiesTable()
     {
         DefaultTableModel model = new DefaultTableModel();
-        cvsPropertiesTable.setModel(model);
+        vcsPropertiesTable.setModel(model);
+        vcsPropertiesTable.addMouseListener(
+            new CvsPropertiesMouseListener(
+                vcsPropertiesTable,
+                vcsTreeTable,
+                vcsAdapter,
+                settings
+            )
+        );
     }
 
     private void initTrackerAdapter() throws TrackerAdapterException {
@@ -207,7 +204,7 @@ public class RCTool extends JFrame
         FilterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new VcsWorker(cvsTreeTable, cvsAdapter, settings, getFilter()).execute();
+                new VcsWorker(vcsTreeTable, vcsAdapter, settings, getFilter()).execute();
                 new TrackerWorker(trackerTreeTable, trackerAdapter, settings, getFilter()).execute();
             }
         });
@@ -243,9 +240,9 @@ public class RCTool extends JFrame
 
     private void initSwingBits()
     {
-        TableRowFilterSupport.forFilter(new JXTreeTableFilter(cvsTreeTable)).searchable(true).apply();
+        TableRowFilterSupport.forFilter(new JXTreeTableFilter(vcsTreeTable)).searchable(true).apply();
         TableRowFilterSupport.forFilter(new JXTreeTableFilter(trackerTreeTable)).searchable(true).apply();
-        TableRowFilterSupport.forTable(cvsPropertiesTable).searchable(true).apply();
+        TableRowFilterSupport.forTable(vcsPropertiesTable).searchable(true).apply();
     }
 
     public static void main(String[] args)

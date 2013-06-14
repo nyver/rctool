@@ -3,10 +3,12 @@ package com.nyver.rctool.vcs;
 import com.nyver.rctool.model.Filter;
 import com.nyver.rctool.model.Revision;
 import com.nyver.rctool.model.RevisionChange;
+import org.apache.commons.io.IOUtils;
 import org.jdesktop.swingx.treetable.TreeTableNode;
 import org.tigris.subversion.svnclientadapter.*;
 import org.tigris.subversion.svnclientadapter.svnkit.SvnKitClientAdapterFactory;
 
+import java.io.*;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -153,6 +155,61 @@ public class SvnAdapter extends VcsAdapter
             e.printStackTrace();
             throw new VcsAdapterException(e.getMessage());
         }
+    }
+
+    protected String getTempDir()
+    {
+        return System.getProperty("java.io.tmpdir");
+    }
+
+    protected String getCheckoutFileName(String path, String revision)
+    {
+        return new File(path).getName() + "." + revision;
+    }
+
+    @Override
+    public File checkoutFile(String path, String revision, boolean previousRevision) throws VcsAdapterException {
+
+        String tempDir = getTempDir();
+
+        if (null != path && !path.isEmpty()
+                && null != revision && !revision.isEmpty()
+                && null != tempDir && !tempDir.isEmpty()) {
+
+            if (previousRevision) {
+                revision = String.valueOf(Integer.parseInt(revision) - 1);
+            }
+
+            String url = getHost() + path.replace("\\", "/");
+            String filePath = tempDir + getCheckoutFileName(path, revision);
+
+            File file = new File(filePath);
+
+            try {
+                InputStream inputStream;
+                if (previousRevision) {
+                    inputStream = getClient().getContent(
+                            new SVNUrl(url),
+                            SVNRevision.getRevision(revision)
+                    );
+                } else {
+                    inputStream = getClient().getContent(new SVNUrl(url), SVNRevision.getRevision(revision));
+                }
+                OutputStream outputStream = new FileOutputStream(file, false);
+
+                IOUtils.copy(inputStream, outputStream);
+
+                outputStream.close();
+                inputStream.close();
+
+                return file;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new VcsAdapterException(e.getMessage());
+            }
+        }
+
+        return null;
     }
 
 }
