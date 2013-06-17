@@ -1,8 +1,9 @@
 package com.nyver.rctool;
 
 import com.ezware.oxbow.swingbits.table.filter.TableRowFilterSupport;
-import com.nyver.rctool.listener.CvsPropertiesMouseListener;
+import com.nyver.rctool.listener.VcsPropertiesMouseListener;
 import com.nyver.rctool.listener.CvsTreeSelectionListener;
+import com.nyver.rctool.menu.VcsPropertiesTablePopupMenu;
 import com.nyver.rctool.vcs.VcsAdapter;
 import com.nyver.rctool.vcs.VcsAdapterException;
 import com.nyver.rctool.model.Filter;
@@ -12,16 +13,12 @@ import com.nyver.rctool.treetable.filter.JXTreeTableFilter;
 import com.nyver.rctool.worker.VcsWorker;
 import com.nyver.rctool.worker.TrackerWorker;
 import org.jdesktop.swingx.JXDatePicker;
-import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.JXTreeTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,7 +51,9 @@ public class RCTool extends JFrame
     private JPanel statusBar;
     private JLabel statusBarLabel;
 
-    AppSettings settings = new AppSettings();
+    private AppSettings settings = new AppSettings();
+
+    private VcsPropertiesTablePopupMenu vcsPropertiesTablePopupMenu;
 
     public RCTool()
     {
@@ -107,6 +106,30 @@ public class RCTool extends JFrame
 
         setVisible(true);
 
+    }
+
+    public AppSettings getSettings() {
+        return settings;
+    }
+
+    public VcsAdapter getVcsAdapter() {
+        return vcsAdapter;
+    }
+
+    public JXTreeTable getVcsTreeTable() {
+        return vcsTreeTable;
+    }
+
+    public JTable getVcsPropertiesTable() {
+        return vcsPropertiesTable;
+    }
+
+    public JLabel getStatusBarLabel() {
+        return statusBarLabel;
+    }
+
+    public VcsPropertiesTablePopupMenu getVcsPropertiesTablePopupMenu() {
+        return vcsPropertiesTablePopupMenu;
     }
 
     public Filter getFilter()
@@ -165,18 +188,20 @@ public class RCTool extends JFrame
         );
     }
 
+    private void initVcsPropertiesTablePopupMenu()
+    {
+        vcsPropertiesTablePopupMenu = new VcsPropertiesTablePopupMenu(this);
+    }
+
     private void initVcsPropertiesTable()
     {
         DefaultTableModel model = new DefaultTableModel();
         vcsPropertiesTable.setModel(model);
         vcsPropertiesTable.addMouseListener(
-            new CvsPropertiesMouseListener(
-                vcsPropertiesTable,
-                vcsTreeTable,
-                vcsAdapter,
-                settings
-            )
+            new VcsPropertiesMouseListener(this)
         );
+
+        initVcsPropertiesTablePopupMenu();
     }
 
     private void initTrackerAdapter() throws TrackerAdapterException {

@@ -1,6 +1,7 @@
 package com.nyver.rctool.listener;
 
 import com.nyver.rctool.AppSettings;
+import com.nyver.rctool.RCTool;
 import com.nyver.rctool.vcs.VcsAdapter;
 import com.nyver.rctool.worker.VcsDiffWorker;
 import org.jdesktop.swingx.JXTreeTable;
@@ -17,43 +18,39 @@ import java.text.ParseException;
 /**
  * @author Yuri Novitsky
  */
-public class CvsPropertiesMouseListener implements MouseListener
+public class VcsPropertiesMouseListener implements MouseListener
 {
-    private JTable vcsPropertiesTable;
-    private JXTreeTable vcsTreeTable;
-    private VcsAdapter vcsAdapter;
-    private AppSettings settings;
+    private RCTool mainFrame;
 
-    public CvsPropertiesMouseListener(JTable cvsPropertiesTable, JXTreeTable cvsTreeTable, VcsAdapter vcsAdapter, AppSettings settings) {
-        this.vcsPropertiesTable = cvsPropertiesTable;
-        this.vcsTreeTable = cvsTreeTable;
-        this.vcsAdapter = vcsAdapter;
-        this.settings = settings;
+    public VcsPropertiesMouseListener(RCTool mainFrame) {
+        this.mainFrame = mainFrame;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getClickCount() == 2) {
-            int row = vcsPropertiesTable.getSelectedRow();
-            int rowRevision = vcsTreeTable.getSelectedRow();
+            int row = mainFrame.getVcsPropertiesTable().getSelectedRow();
+            int rowRevision = mainFrame.getVcsTreeTable().getSelectedRow();
             if ((row >= 0) && (rowRevision >= 0)) {
-                String path = (String) vcsPropertiesTable.getValueAt(row, 1);
-                String revision = (String) vcsTreeTable.getValueAt(rowRevision, 0);
+                String path = (String) mainFrame.getVcsPropertiesTable().getValueAt(row, 1);
+                String revision = (String) mainFrame.getVcsTreeTable().getValueAt(rowRevision, 0);
                 if (!path.isEmpty() && !revision.isEmpty()) {
-                    new VcsDiffWorker(path, revision, vcsAdapter, settings).execute();
+                    new VcsDiffWorker(path, revision, mainFrame).execute();
                 }
             }
         }
+
+        showPopup(e);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        showPopup(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        showPopup(e);
     }
 
     @Override
@@ -64,5 +61,12 @@ public class CvsPropertiesMouseListener implements MouseListener
     @Override
     public void mouseExited(MouseEvent e) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private void showPopup(MouseEvent e)
+    {
+        if (e.isPopupTrigger()) {
+            mainFrame.getVcsPropertiesTablePopupMenu().show(e.getComponent(), e.getX(), e.getY());
+        }
     }
 }

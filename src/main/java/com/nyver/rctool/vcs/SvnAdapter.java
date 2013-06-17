@@ -172,9 +172,8 @@ public class SvnAdapter extends VcsAdapter
 
         String tempDir = getTempDir();
 
-        if (null != path && !path.isEmpty()
-                && null != revision && !revision.isEmpty()
-                && null != tempDir && !tempDir.isEmpty()) {
+        if (null != path && null != revision && null != tempDir
+            && !path.isEmpty()&& !revision.isEmpty() && !tempDir.isEmpty()) {
 
             if (previousRevision) {
                 revision = String.valueOf(Integer.parseInt(revision) - 1);
@@ -187,14 +186,7 @@ public class SvnAdapter extends VcsAdapter
 
             try {
                 InputStream inputStream;
-                if (previousRevision) {
-                    inputStream = getClient().getContent(
-                            new SVNUrl(url),
-                            SVNRevision.getRevision(revision)
-                    );
-                } else {
-                    inputStream = getClient().getContent(new SVNUrl(url), SVNRevision.getRevision(revision));
-                }
+                inputStream = getClient().getContent(new SVNUrl(url), SVNRevision.getRevision(revision));
                 OutputStream outputStream = new FileOutputStream(file, false);
 
                 IOUtils.copy(inputStream, outputStream);
