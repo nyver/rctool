@@ -60,8 +60,14 @@ public class JiraAdapter extends TrackerAdapter
 
         DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
+        String jql = String.format("updatedDate >= \"%s\" AND updatedDate <= \"%s\"" , dateFormat.format(filter.getStartDate()), dateFormat.format(filter.getEndDate()));
+
+        if (!filter.getJql().isEmpty()) {
+            jql = String.format("%s AND (%s)", jql, filter.getJql());
+        }
+
         SearchResult result = getClient().getSearchClient().searchJql(
-           String.format("updatedDate >= \"%s\" AND updatedDate <= \"%s\"" , dateFormat.format(filter.getStartDate()), dateFormat.format(filter.getEndDate())),
+           jql,
            pm
         );
 

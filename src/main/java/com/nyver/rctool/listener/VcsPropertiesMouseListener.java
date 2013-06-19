@@ -2,6 +2,7 @@ package com.nyver.rctool.listener;
 
 import com.nyver.rctool.AppSettings;
 import com.nyver.rctool.RCTool;
+import com.nyver.rctool.model.RevisionChange;
 import com.nyver.rctool.vcs.VcsAdapter;
 import com.nyver.rctool.worker.VcsDiffWorker;
 import org.jdesktop.swingx.JXTreeTable;
@@ -35,7 +36,10 @@ public class VcsPropertiesMouseListener implements MouseListener
                 String path = (String) mainFrame.getVcsPropertiesTable().getValueAt(row, 1);
                 String revision = (String) mainFrame.getVcsTreeTable().getValueAt(rowRevision, 0);
                 if (!path.isEmpty() && !revision.isEmpty()) {
-                    new VcsDiffWorker(path, revision, mainFrame).execute();
+                    String action = (String) mainFrame.getVcsPropertiesTable().getValueAt(row, 2);
+                    if (RevisionChange.ACTION_MODIFY.equals(action)) {
+                        new VcsDiffWorker(path, revision, mainFrame).execute();
+                    }
                 }
             }
         }
@@ -65,6 +69,12 @@ public class VcsPropertiesMouseListener implements MouseListener
 
     private void showPopup(MouseEvent e)
     {
+        int row = mainFrame.getVcsPropertiesTable().getSelectedRow();
+
+        if (row >= 0) {
+            mainFrame.getVcsPropertiesTable().setRowSelectionInterval(row, row);
+        }
+
         if (e.isPopupTrigger()) {
             mainFrame.getVcsPropertiesTablePopupMenu().show(e.getComponent(), e.getX(), e.getY());
         }

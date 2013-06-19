@@ -2,6 +2,7 @@ package com.nyver.rctool.menu;
 
 import com.nyver.rctool.RCTool;
 import com.nyver.rctool.listener.VcsPropertiesMouseListener;
+import com.nyver.rctool.model.RevisionChange;
 import com.nyver.rctool.worker.VcsDiffWorker;
 
 import javax.swing.*;
@@ -34,7 +35,10 @@ public class VcsPropertiesTablePopupMenu extends JPopupMenu
                     String path = (String) mainFrame.getVcsPropertiesTable().getValueAt(row, 1);
                     String revision = (String) mainFrame.getVcsTreeTable().getValueAt(rowRevision, 0);
                     if (!path.isEmpty() && !revision.isEmpty()) {
-                        new VcsDiffWorker(path, revision, mainFrame).execute();
+                        Character action = (Character) mainFrame.getVcsPropertiesTable().getValueAt(row, 2);
+                        if (RevisionChange.ACTION_MODIFY.equals(action)) {
+                            new VcsDiffWorker(path, revision, mainFrame).execute();
+                        }
                     }
                 }
             }

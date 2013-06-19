@@ -11,11 +11,13 @@ public class Filter
 {
     private Date startDate;
     private Date endDate;
+    private String jql;
 
-    public Filter(Date startDate, Date endDate)
+    public Filter(Date startDate, Date endDate, String jql)
     {
         this.startDate = startDate;
         this.endDate = endDate;
+        this.jql = jql;
     }
 
     public Date getStartDate()
@@ -37,4 +39,13 @@ public class Filter
     {
         this.endDate = endDate;
     }
+
+    public String getJql() {
+        return jql;
+    }
+
+    public void setJql(String jql) {
+        this.jql = jql;
+    }
+
 }

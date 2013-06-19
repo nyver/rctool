@@ -49,8 +49,8 @@ public class VcsWorker extends SwingWorker
 
         VcsTreeTableModel loadModel = new VcsTreeTableModel(root);
         loadModel.setColumns(new String[] {""});
-        treeTable.setRootVisible(true);
         treeTable.setTreeTableModel(loadModel);
+        treeTable.setRootVisible(true);
 
         List<Revision> revisions = adapter.getRevisions(filter);
         if (revisions.size() > 0) {

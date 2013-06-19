@@ -44,8 +44,8 @@ public class TrackerWorker extends SwingWorker
 
         TrackerTreeTableModel loadModel = new TrackerTreeTableModel(root);
         loadModel.setColumns(new String[]{""});
-        treeTable.setRootVisible(true);
         treeTable.setTreeTableModel(loadModel);
+        treeTable.setRootVisible(true);
 
         List<Issue> issues = adapter.getIssues(filter);
         if (issues.size() > 0) {

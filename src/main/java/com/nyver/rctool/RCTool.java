@@ -39,17 +39,19 @@ public class RCTool extends JFrame
     private JSplitPane HorizontalSplitPane;
     private JXTreeTable vcsTreeTable;
     private JXTreeTable trackerTreeTable;
-    private JPanel FilterByPeriodPanel;
-    private JButton FilterButton;
-    private JPanel FilterPanel;
-    private JLabel PeriodStartLabel;
-    private JLabel PeriodEndLabel;
-    private JXDatePicker PeriodStartDatePicker;
-    private JXDatePicker PeriodEndDatePicker;
+    private JPanel filterByPeriodPanel;
+    private JButton filterButton;
+    private JPanel filterPanel;
+    private JLabel filterPeriodStartLabel;
+    private JLabel filterPeriodEndLabel;
+    private JXDatePicker filterPeriodStartDatePicker;
+    private JXDatePicker filterPeriodEndDatePicker;
     private JTable vcsPropertiesTable;
     private JSplitPane vcsSplitPane;
     private JPanel statusBar;
     private JLabel statusBarLabel;
+    private JPanel filterByJQLPanel;
+    private JTextArea filterJQLTextArea;
 
     private AppSettings settings = new AppSettings();
 
@@ -103,7 +105,7 @@ public class RCTool extends JFrame
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.OK_OPTION);
         }
-
+        filterJQLTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         setVisible(true);
 
     }
@@ -134,7 +136,7 @@ public class RCTool extends JFrame
 
     public Filter getFilter()
     {
-        return new Filter(PeriodStartDatePicker.getDate(), PeriodEndDatePicker.getDate());
+        return new Filter(filterPeriodStartDatePicker.getDate(), filterPeriodEndDatePicker.getDate(), filterJQLTextArea.getText());
     }
 
     private SimpleDateFormat getSettingDateFormat()
@@ -148,6 +150,7 @@ public class RCTool extends JFrame
         VerticalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_VERTICAL_PANE_DIVIDER_LOCATION));
         HorizontalSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_HORIZONTAL_PANE_DIVIDER_LOCATION));
         vcsSplitPane.setDividerLocation(settings.getInt(AppSettings.SETTING_CVS_PANE_DIVIDER_LOCATION));
+        filterJQLTextArea.setText(settings.get(AppSettings.SETTING_FILTER_JQL));
     }
 
     private void saveSettings() throws IOException
@@ -161,8 +164,9 @@ public class RCTool extends JFrame
 
         SimpleDateFormat dateFormat = getSettingDateFormat();
 
-        settings.set(AppSettings.SETTING_FILTER_DATE_FROM, dateFormat.format(PeriodStartDatePicker.getDate()));
-        settings.set(AppSettings.SETTING_FILTER_DATE_TO, dateFormat.format(PeriodEndDatePicker.getDate()));
+        settings.set(AppSettings.SETTING_FILTER_DATE_FROM, dateFormat.format(filterPeriodStartDatePicker.getDate()));
+        settings.set(AppSettings.SETTING_FILTER_DATE_TO, dateFormat.format(filterPeriodEndDatePicker.getDate()));
+        settings.set(AppSettings.SETTING_FILTER_JQL, filterJQLTextArea.getText());
 
         settings.save();
     }
@@ -226,7 +230,7 @@ public class RCTool extends JFrame
     {
         initFilterByPeriod();
 
-        FilterButton.addActionListener(new ActionListener() {
+        filterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new VcsWorker(vcsTreeTable, vcsAdapter, settings, getFilter()).execute();
@@ -246,16 +250,16 @@ public class RCTool extends JFrame
         try {
             if (!filterDateFrom.isEmpty()) {
                 calendar.setTime(dateFormat.parse(filterDateFrom));
-                PeriodStartDatePicker.setDate(calendar.getTime());
+                filterPeriodStartDatePicker.setDate(calendar.getTime());
             } else {
-                PeriodStartDatePicker.setDate(Calendar.getInstance().getTime());
+                filterPeriodStartDatePicker.setDate(Calendar.getInstance().getTime());
             }
 
             if (!filterDateFrom.isEmpty()) {
                 calendar.setTime(dateFormat.parse(filterDateTo));
-                PeriodEndDatePicker.setDate(calendar.getTime());
+                filterPeriodEndDatePicker.setDate(calendar.getTime());
             } else {
-                PeriodEndDatePicker.setDate(Calendar.getInstance().getTime());
+                filterPeriodEndDatePicker.setDate(Calendar.getInstance().getTime());
             }
 
         } catch (ParseException e) {

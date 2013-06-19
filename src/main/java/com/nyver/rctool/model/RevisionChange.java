@@ -9,6 +9,10 @@ import java.io.File;
  */
 public class RevisionChange
 {
+    public static final Character ACTION_ADD = 'A';
+    public static final Character ACTION_MODIFY = 'M';
+    public static final Character ACTION_DELETE = 'D';
+
     private File file;
     private char action;
 
